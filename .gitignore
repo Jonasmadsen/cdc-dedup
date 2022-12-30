@@ -1,0 +1,5 @@
+Google_tests/temp/
+Google_tests/lib/
+Google_tests/test_data/
+.idea/
+cmake-build-debug/
