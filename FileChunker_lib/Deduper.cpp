@@ -1,6 +1,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <iostream>
+#include <algorithm>
 #include "Deduper.h"
 #include "FileChunker.h"
 
@@ -74,6 +75,14 @@ int Deduper::dedupe(){
     //Make a FileChunk object used by all threads.
     FileChunker f = FileChunker(input, Deduper::mt_chunk_size, Deduper::window_size);
 
+    // Make sure the file exists
+    std::ifstream check_stream(input);
+    if (!check_stream){
+        std::cout << "The file doesnt exists!" << std::endl;
+        return -1;
+    } else
+        check_stream.close();
+
     //Ideally we launch the maximum amount of threads requested
     int threads_to_launch = Deduper::max_threads;
     //If there exists fewer chunks than threads we lower our thread count to match the amount of chunks
@@ -129,7 +138,7 @@ int Deduper::dedupe(){
     //Clean output for final chunks vector
     if (!silent)
         std::cout << "Sorting: " << results.size() << " values" << std::endl;
-    sort(results.begin(), results.end());
+    std::sort(results.begin(), results.end());
     int count = 0;
     int biggest = 0;
     long long last_val = 0;

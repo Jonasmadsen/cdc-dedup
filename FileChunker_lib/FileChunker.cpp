@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <cstring>
 #include "FileChunker.h"
 
 
@@ -40,7 +41,7 @@ mt_task FileChunker::get_next_mt_task(bool silent) {
         // We only get data from file
         input.read(task.data, task.data_size);
         // and fill the overlap for next time
-        memcpy(overlap, task.data + task.data_size - overlap_size, overlap_size);
+        std::memcpy(overlap, task.data + task.data_size - overlap_size, overlap_size);
         megabytes_processed_this_round = double(task.data_size) / 1024 / 1024;
     } else {
         if(mt_chunk_size > remaining_bytes){
@@ -53,13 +54,13 @@ mt_task FileChunker::get_next_mt_task(bool silent) {
         task.data = new char[task.data_size];
 
         // Copy the overlap data into the beginning of the data field
-        memcpy(task.data, overlap, overlap_size);
+        std::memcpy(task.data, overlap, overlap_size);
         //We just moved the offset by overlap_size and we must reflect this
         task.offset -= overlap_size;
         // Read the rest of the data from the input file
         input.read(task.data + overlap_size,task.data_size - overlap_size);
         // Update the overlap for the next mt_task
-        memcpy(overlap, task.data + task.data_size - overlap_size, overlap_size);
+        std::memcpy(overlap, task.data + task.data_size - overlap_size, overlap_size);
         megabytes_processed_this_round = double(task.data_size - overlap_size) / 1024 / 1024;
     }
 
